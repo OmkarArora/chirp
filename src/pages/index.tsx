@@ -22,7 +22,7 @@ const CreatePostWizard = () => {
     onSuccess: () => {
       setInput("");
 
-      // void tells TS ypu don't care about the promise, let it run in background
+      // void tells TS you don't care about the promise, let it run in background
       void ctx.posts.getAll.invalidate();
     },
   });
