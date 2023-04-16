@@ -6,18 +6,33 @@ import { LoadingPage } from "~/components/Loading";
 import { api } from "~/utils/api";
 import Image from "next/image";
 
+const ProfileFeed = (props: { userId: string }) => {
+  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
+    userId: props.userId,
+  });
+
+  if (isLoading) return <LoadingPage />;
+
+  if (!data || data.length === 0) return <div>User has not posted</div>;
+
+  return (
+    <div className="flex flex-col">
+      {data.map((fullPost) => (
+        <PostView key={fullPost.post.id} {...fullPost} />
+      ))}
+    </div>
+  );
+};
+
 const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   const { data, isLoading } = api.profile.getUserByUsername.useQuery({
     username,
   });
 
-  console.log("user data", data, "isLoading:", isLoading);
   if (isLoading) return <LoadingPage />;
 
-  console.log("user data", data, "isLoading:", isLoading);
   if (!data) return <div>404</div>;
 
-  console.log("user data", data, "isLoading:", isLoading);
   return (
     <>
       <Head>
@@ -37,6 +52,7 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
         <div className="h-[64px]"></div>
         <div className="p-4 text-2xl">{`@${data.username ?? ""}`}</div>
         <div className="w-full border-b border-slate-400" />
+        <ProfileFeed userId={data.id} />
       </PageLayout>
     </>
   );
@@ -47,9 +63,10 @@ import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import SuperJSON from "superjson";
 import { PageLayout } from "~/components/layout";
+import { PostView } from "~/components/postView";
 
 // This makes sure that the data is already there when the user gets there
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps = (context) => {
   const ssgHelper = createServerSideHelpers({
     router: appRouter,
     ctx: { prisma, userId: null },
