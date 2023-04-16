@@ -2,7 +2,7 @@
 
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import { LoadingPage } from "~/components/loading";
+import { LoadingPage } from "~/components/Loading";
 import { api } from "~/utils/api";
 import Image from "next/image";
 
