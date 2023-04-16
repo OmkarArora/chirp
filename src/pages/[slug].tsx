@@ -66,7 +66,7 @@ import { PageLayout } from "~/components/layout";
 import { PostView } from "~/components/postView";
 
 // This makes sure that the data is already there when the user gets there
-export const getStaticProps: GetStaticProps = (context) => {
+export const getStaticProps: GetStaticProps = async (context) => {
   const ssgHelper = createServerSideHelpers({
     router: appRouter,
     ctx: { prisma, userId: null },
@@ -79,7 +79,7 @@ export const getStaticProps: GetStaticProps = (context) => {
 
   const username = slug.replace("@", "");
 
-  ssgHelper.profile.getUserByUsername.prefetch({ username });
+  await ssgHelper.profile.getUserByUsername.prefetch({ username });
 
   return {
     props: {
