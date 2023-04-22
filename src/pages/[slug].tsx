@@ -6,6 +6,10 @@ import { LoadingPage } from "~/components/Loading";
 import { api } from "~/utils/api";
 import Image from "next/image";
 
+import { PageLayout } from "~/components/layout";
+import { PostView } from "~/components/postView";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
+
 const ProfileFeed = (props: { userId: string }) => {
   const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
     userId: props.userId,
@@ -58,20 +62,9 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   );
 };
 
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { appRouter } from "~/server/api/root";
-import { prisma } from "~/server/db";
-import SuperJSON from "superjson";
-import { PageLayout } from "~/components/layout";
-import { PostView } from "~/components/postView";
-
 // This makes sure that the data is already there when the user gets there
 export const getStaticProps: GetStaticProps = async (context) => {
-  const ssgHelper = createServerSideHelpers({
-    router: appRouter,
-    ctx: { prisma, userId: null },
-    transformer: SuperJSON, // optional - adds superjson serialization
-  });
+  const ssgHelper = generateSSGHelper();
 
   const slug = context.params?.slug;
 
